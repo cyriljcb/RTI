@@ -663,6 +663,7 @@ void HandlerSIGINT(int s)
   close(sClient);
   exit(0);
 }
+
 void mettreAJourArticle(char* c)
 {
    /*char nbrStr[3];

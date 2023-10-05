@@ -79,6 +79,7 @@ int Accept(int sEcoute, char* ipClient)
 	 return sSocket;
 }
 
+
 int ClientSocket(char* ipServeur,int portServeur)
 {
 	int sClient;
