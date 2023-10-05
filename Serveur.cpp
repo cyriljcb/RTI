@@ -13,7 +13,7 @@
 #include "TCP.h"
 #include "OVESP.h"
 
-#define NB_THREADS_POOL 2
+#define NB_THREADS_POOL 3
 #define TAILLE_FILE_ATTENTE 20
 pthread_mutex_t mutexSocketsAcceptees;
 pthread_mutex_t mutexAccesBD;
@@ -132,25 +132,6 @@ void HandlerSIGINT(int s)
 }
 void traitement(int sService)
 {
-	/*char* requete; 
-	char *reponse;
-	char *lArticle;
-   while(1)
-   {
-   		requete = (char*)malloc(TAILLE_MAX);
-   		Recevoir(requete);
-        printf("requete : %s\n", requete);
-        printf("menu\n");
-        lArticle = (char*)malloc(TAILLE_MAX); 
-        AccesBD_OVESP(requete, reponse, sService, lArticle);
-        printf("liste article = %s\n", lArticle);
-        printf("apres l'acces BD\n");
-        Envoi(reponse);
-        
-        // Libérer la mémoire allouée pour requete et lArticle
-        free(requete);
-        free(lArticle);
-   }*/
 	char requete[500],reponse[500],lArticle[500];
 	lArticle[0]='\0';
 	while(1)

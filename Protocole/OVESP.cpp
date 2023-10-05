@@ -34,9 +34,9 @@ void FctCaddie(char* requete, char* reponse,char* lArticle);
 int estPresent(int socket);
 void ajoute(int socket);
 void retire(int socket);
+void requeteDB(int ind, char* req1);
 int recupererNbrArticle(char* lArticle);
 char* remplacerpoint(char *str);
-int rechercherQuantite(char *ind,char *str);
 pthread_mutex_t mutexClients = PTHREAD_MUTEX_INITIALIZER;
 
 void Connexion_OVESP()
@@ -146,7 +146,14 @@ void FctLogin(char* requete,char * reponse,int socket) //attention, on va écrir
           {
           	if(nouveau==1)
           	{
-          		sprintf(requeteSQL,"INSERT INTO clients (id,login,password) VALUES ('%d','%s','%s');",(NULL,nom,mdp));
+          		sprintf(requeteSQL, "INSERT INTO clients (login, password) VALUES ('%s', '%s');", nom, mdp);
+
+                if (mysql_query(connexion,requeteSQL) != 0)
+		          {
+		            printf("Erreur de mysql_query: %s\n",mysql_error(connexion));
+		            exit(1);
+		          }
+		          sprintf(message,"Bienvenue %s",nom);
                 status = 1;
           	}
           	else
@@ -427,7 +434,7 @@ int suppArticle(char* lArticle,char* ind)
 	printf("\n(SUPPARTICLE) lArticle = %s\n",lArticle);
     int a = recupererNbrArticle(lArticle);
     int indice;
-    char cpy[500] = "",test[500]="",id[500]="",tmp[500]="",str[500]="",requeteSQL[500];
+    char cpy[70] = "",test[500]="",id[2]="",tmp[70]="",str[500]="",requeteSQL[500];
     char listeArticle[100];
     char quantite[10],place[2];
     int i=0;
@@ -449,7 +456,6 @@ int suppArticle(char* lArticle,char* ind)
 	    
 	    if (ptr != NULL) 
 	    {
-	    	printf("AMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n");
 	        // Si "quant:" est trouvé, avance le pointeur
 	        ptr += strlen("quant:");
 	        
@@ -480,7 +486,7 @@ int suppArticle(char* lArticle,char* ind)
 	          }
 	          if((Tuple = mysql_fetch_row(resultat)) != NULL)
 	          {
-	          	
+
 	            int quant,quantBD,quanttotal;
 	            char tmp[500];
 	            sprintf(tmp,lArticle);
@@ -574,47 +580,5 @@ int suppArticle(char* lArticle,char* ind)
     }
     printf("la liste = %s\n", lArticle);
     return b;
-
 	
-}
-int rechercherQuantite(char* ind, char* chaine) 
-{
-    int quant = 0;
-    char* tok = strtok(chaine, dollar);
-    printf("(rechercherQuantite) tok = %s\n",tok);
-    while (tok != NULL) 
-    {
-    	printf("la chaine normale = %s\n",tok);
-        char t[5] = "";
-        strncpy(t, tok, 1);
-        printf("(rechercherQuantite) t = %s\n",t);
-        if (strcmp(ind, t) == 0) 
-        {
-        	printf("rentre dans le if\n");
-            char* ptr;
-            char rech[30];
-            sprintf(rech, "%s", tok);
-            ptr = strstr(rech, "quant:");
-
-            if (ptr != NULL) 
-            {
-                char q[3];
-                int i = 0;
-
-                while (ptr[i] != '/' && i < 3) 
-                {
-                    q[i] = ptr[i];
-                    i++;
-                }
-
-                q[i] = '\0';
-                quant = atoi(q);
-                ptr =NULL;
-            }
-        }
-
-        tok = strtok(NULL, dollar);
-    }
-
-    return quant;
 }

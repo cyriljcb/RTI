@@ -9,8 +9,8 @@
 
 int ServerSocket(int port1)
 {
-		int sEcoute1;
-		char ports[10];//faut convertir le int en char
+	int sEcoute1;
+	char ports[10];//faut convertir le int en char
 	sprintf(ports, "%d", port1);
 	struct addrinfo hints;
 	struct addrinfo *results;
@@ -153,34 +153,4 @@ int Receive(int sSocket,char* data)
 		}
 	}
 	return i;
-}
-char GetIP()
-{
-	// Pour la recherche
-	struct addrinfo hints;
-	struct addrinfo *results;
-	// Pour l'affichage des resultats
-	char host[NI_MAXHOST];
-	char port[NI_MAXSERV];
-	struct addrinfo* info;
-	// On fournit l'hote et le service
-	memset(&hints,0,sizeof(struct addrinfo)); // initialisation à 0
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
-	if (getaddrinfo("moon","50000",&hints,&results) != 0)
-	printf("Erreur de getaddrinfo");
-	else
-	{
-		// Affichage du contendu des adresses obtenues au format numérique
-		for (info = results ; info != NULL ; info = info->ai_next)
-		{
-			getnameinfo(info->ai_addr,info->ai_addrlen,
-			host,NI_MAXHOST,
-			port,NI_MAXSERV,
-			NI_NUMERICSERV | NI_NUMERICHOST);
-			printf("Adresse IP: %s -- Port: %s\n",host,port);
-			
-		}
-	}
-	return *host;
 }
