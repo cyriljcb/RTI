@@ -480,6 +480,7 @@ int suppArticle(char* lArticle,char* ind)
 	          }
 	          if((Tuple = mysql_fetch_row(resultat)) != NULL)
 	          {
+	          	
 	            int quant,quantBD,quanttotal;
 	            char tmp[500];
 	            sprintf(tmp,lArticle);
