@@ -342,6 +342,13 @@ void WindowClient::on_pushButtonLogin_clicked()
   }
   else
   {
+    if(strlen(getNom())>=20|| strlen(getMotDePasse())>=20)
+    {
+      dialogueErreur("Erreur login", "veuillez completer les champs avec moins de 20 caracteres");
+    }
+    else
+    {
+
     char message[80],reponse[80],opt[20];
    
   sprintf(message,"LOGIN");
@@ -438,6 +445,9 @@ void WindowClient::on_pushButtonLogin_clicked()
       }
       
     }
+  }
+   
+  
   }
 
 
@@ -804,9 +814,7 @@ void WindowClient::on_pushButtonPayer_clicked()
           strcat(a,tok);
            w->dialogueMessage("Facture",a);          
         }
-    //dans les consignes, il est mit que nous devons remettre les articles dans la BD
-    // j'interprete donc cela comme un cancel_all
-      sprintf(m,"CANCEL_ALL");
+      sprintf(m,"CADDIE");
       strcat(m,s);
       strcat(m,"\0");
        if ((Send(sClient,m,strlen(m))) == -1)

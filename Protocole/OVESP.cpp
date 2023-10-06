@@ -128,6 +128,15 @@ void AccesBD_OVESP(char* requete, char * reponse,int socket,char * lArticle)
 								FctLogout(requete,reponse,socket);
 								pthread_mutex_unlock(&mutexAccesBD);
 							}
+							else
+							{
+								if(strcmp(opt,"CADDIE")==0)
+								{
+									pthread_mutex_lock(&mutexAccesBD);
+									FctCaddie(requete,reponse,lArticle,true);
+									pthread_mutex_unlock(&mutexAccesBD);
+								}
+							}
 						}
 					}
 				}
@@ -447,7 +456,7 @@ void FctConfirmer(char* requete,char* reponse, char* lArticle)
 	printf("la chaine : %s\n",requete);
 	MYSQL_RES  *resultat;
   MYSQL_ROW  Tuple;
-  char requeteSQL[500];
+  char requeteSQL[500],m[500];
   tok = strtok(NULL,s);
   int idclient = atoi(tok);
   tok = strtok(NULL,s);
@@ -457,6 +466,7 @@ void FctConfirmer(char* requete,char* reponse, char* lArticle)
  	float montant = atof(Cmontant);
  	printf("montant : %f\n",montant);
  int paye = 0; // 0 pour faux (non payé)
+ int idFacture = -1;
  sprintf(reponse,"CONFIRMER");
  strcat(reponse,s);
 sprintf(requeteSQL, "INSERT INTO factures (idClient, date, montant, paye) VALUES ('%d', NOW(), '%f', '%d');", idclient, montant, paye);
@@ -477,7 +487,8 @@ sprintf(requeteSQL, "INSERT INTO factures (idClient, date, montant, paye) VALUES
         exit(1);
     }
     if ((Tuple = mysql_fetch_row(resultat)) != NULL) {
-    		strcat(reponse,Tuple[0]);    
+    		strcat(reponse,Tuple[0]); 
+    		idFacture = atoi(Tuple[0]);   
     } 
     else {
         printf("Erreur lors de la récupération de l'ID de la facture\n");
@@ -485,7 +496,38 @@ sprintf(requeteSQL, "INSERT INTO factures (idClient, date, montant, paye) VALUES
     }
     strcat(reponse,s);
     strcat(reponse,"\0");
-    //suppAllArticle(lArticle);
+
+    int a = recupererNbrArticle(lArticle);
+    strcpy(m,lArticle);
+    printf("lArticle :%s\n",m);
+    tok = strtok(m,dollar);
+    int quant =-1, idArticle=-1;
+    for(int i = 0; i<a;i++)
+    {
+    	printf("tok %d : %s\n",i,tok);
+    	if(strcmp(tok,"")!=0)
+    	{
+    		tok = strtok(NULL,s);
+    	tok = strtok(NULL,s);
+
+    	idArticle = atoi(tok);
+    	tok = strtok(NULL,s);
+    	tok = strtok(NULL,s);
+    	tok = strtok(NULL,dollar);
+    	quant = atoi(tok);
+    	sprintf(requeteSQL,"INSERT INTO ventes (idFacture,idArticle,quantite) VALUE ('%d','%d', '%d');",idFacture,idArticle,quant);
+    	 if (mysql_query(connexion,requeteSQL) != 0)
+		  {
+		    printf("Erreur de mysql_query: %s\n",mysql_error(connexion));
+		    exit(1);
+		  }
+    	}
+    	else
+    		break;
+    	
+	}
+	sprintf(lArticle,"00$");
+	printf("lArticle apres traitement : %s\n",lArticle);
 
 }
 int estPresent(int socket)
